@@ -1,0 +1,102 @@
+TOOL_DIR=$(PWD)/.tools
+TF_VERSION=1.4.2
+TF=$(TOOL_DIR)/terraform
+JQ_VERSION=1.6
+JQ=$(TOOL_DIR)/jq
+KIND_VERSION=0.19.0
+KIND=$(TOOL_DIR)/kind
+KIND_CONFIG=make/kind.config.yaml
+KUBECONFIG=$(PWD)/kubeconfig
+KCTL_VERSION=1.27.1
+KCTL=$(TOOL_DIR)/kubectl
+KCTL_CMD=$(KCTL) --kubeconfig=$(KUBECONFIG)
+CLOUD=kind #TODO (bdegeeter): support azure, aws, gcp and local kind
+TF_ENV?=terraform/$(CLOUD)
+TF_ENV_DIR=$(TF_ENV)
+
+OS=$(shell uname -s)
+ifeq ($(OS),Darwin)
+	SYS_OS=darwin
+	JQ_OS=osx-amd
+else ifeq ($(OS),Linux)
+	SYS_OS=linux
+	JQ_OS=linux
+else
+	SYS_OS=unknown
+endif
+
+ARCH=$(shell uname -m)
+ifeq ($(ARCH),x86_64)
+	SYS_ARCH=$(ARCH)
+	KIND_ARCH=amd64
+	KCTL_ARCH=amd64
+	JQ_ARCH=64
+else ifeq ($(ARCH),arm64)
+	SYS_ARCH=$(ARCH)
+	KIND_ARCH=arm64
+	KCTL_ARCH=arm64
+	JQ_ARCH=64
+endif
+
+.PHONY: setup-tools
+setup-tools: $(TF) $(JQ) $(KIND) $(KCTL)
+
+$(TF):
+	@echo "install terraform $(TF_VERSION)"
+	@mkdir -p $(TOOL_DIR)
+	@curl -sLo $(TOOL_DIR)/tf.zip "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_$(SYS_OS)_$(SYS_ARCH).zip"
+	@unzip -q $(TOOL_DIR)/tf.zip -d $(TOOL_DIR)
+	@chmod +x $(TF)
+	@rm $(TOOL_DIR)/tf.zip
+
+$(JQ):
+	@echo "install jq $(JQ_VERSION)"
+	@mkdir -p $(TOOL_DIR)
+	@curl -sLo $(JQ) "https://github.com/stedolan/jq/releases/download/jq-$(JQ_VERSION)/jq-$(JQ_OS)$(JQ_ARCH)"
+	@chmod +x $(JQ)
+
+$(KIND):
+	@echo "install kind $(KIND_VERSION)"
+	@mkdir -p $(TOOL_DIR)
+	@curl -sLo $(KIND) "https://kind.sigs.k8s.io/dl/v$(KIND_VERSION)/kind-$(SYS_OS)-$(KIND_ARCH)"
+	@chmod +x $(KIND)
+
+$(KCTL):
+	@echo "install kubectl $(KCTL_VERSION)"
+	@mkdir -p $(TOOL_DIR)
+	@curl -sLo $(KCTL) "https://dl.k8s.io/v$(KCTL_VERSION)/bin/$(SYS_OS)/$(KCTL_ARCH)/kubectl"
+	@chmod +x $(KCTL)
+
+.PHONY: kind-create-cluster
+kind-create-cluster: | $(KIND) $(KCTL)
+	$(KIND) create cluster --name kind-$(NAME) --wait 50s --config=$(KIND_CONFIG) --kubeconfig=$(KUBECONFIG)
+	$(KCTL_CMD) get nodes
+
+.PHONY: kind-delete-cluster
+kind-delete-cluster:
+	$(KIND) delete cluster --name kind-$(NAME)
+
+.PHONY: tfinit
+tfinit: | $(TF)
+	$(TF) -chdir=$(TF_ENV_DIR) init
+
+.PHONY: tfplan
+tfplan: | $(TF) tfinit
+	$(TF) -chdir=$(TF_ENV_DIR) plan
+
+.PHONY: tffmt
+tffmt: | $(TF) tfinit
+	$(TF) -chdir=$(TF_ENV_DIR) fmt
+
+.PHONY: tfapply
+tfapply: | $(TF) tfinit
+	$(TF) -chdir=$(TF_ENV_DIR) apply -auto-approve
+
+.PHONY: tfdestroy
+tfdestroy: | $(TF)
+	$(TF) -chdir=$(TF_ENV_DIR) destroy -auto-approve
+
+.PHONY: clean-tools
+clean-tools: | $(KIND) kind-delete-cluster
+	@echo "delete all tools in $(TOOL_DIR)"
+	@rm -rf $(TOOL_DIR)
