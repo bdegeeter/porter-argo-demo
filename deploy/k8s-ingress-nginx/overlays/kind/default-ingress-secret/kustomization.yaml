@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+secretGenerator:
+  - name: default-server-secret
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=kind-tls.crt
+      - tls.key=kind-tls.key
+generatorOptions:
+  disableNameSuffixHash: true

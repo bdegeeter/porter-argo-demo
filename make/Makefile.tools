@@ -10,7 +10,9 @@ KUBECONFIG=$(PWD)/kubeconfig
 KCTL_VERSION=1.27.1
 KCTL=$(TOOL_DIR)/kubectl
 KCTL_CMD=$(KCTL) --kubeconfig=$(KUBECONFIG)
-CLOUD=kind #TODO (bdegeeter): support azure, aws, gcp and local kind
+K9S_VERSION=0.27.4
+K9S=$(TOOL_DIR)/k9s
+K9S_CMD=$(TOOL_DIR)/k9s --kubeconfig=$(KUBECONFIG)
 TF_ENV?=terraform/$(CLOUD)
 TF_ENV_DIR=$(TF_ENV)
 
@@ -18,9 +20,11 @@ OS=$(shell uname -s)
 ifeq ($(OS),Darwin)
 	SYS_OS=darwin
 	JQ_OS=osx-amd
+	K9S_OS=Darwin
 else ifeq ($(OS),Linux)
 	SYS_OS=linux
 	JQ_OS=linux
+	K9S_OS=Linux
 else
 	SYS_OS=unknown
 endif
@@ -30,16 +34,18 @@ ifeq ($(ARCH),x86_64)
 	SYS_ARCH=$(ARCH)
 	KIND_ARCH=amd64
 	KCTL_ARCH=amd64
+	K9S_ARCH=amd64
 	JQ_ARCH=64
 else ifeq ($(ARCH),arm64)
 	SYS_ARCH=$(ARCH)
 	KIND_ARCH=arm64
 	KCTL_ARCH=arm64
+	K9S_ARCH=arm64
 	JQ_ARCH=64
 endif
 
 .PHONY: setup-tools
-setup-tools: $(TF) $(JQ) $(KIND) $(KCTL)
+setup-tools: $(TF) $(JQ) $(KIND) $(KCTL) $(K9S)
 
 $(TF):
 	@echo "install terraform $(TF_VERSION) to $(TF)"
@@ -67,9 +73,17 @@ $(KCTL):
 	@curl -sLo $(KCTL) "https://dl.k8s.io/v$(KCTL_VERSION)/bin/$(SYS_OS)/$(KCTL_ARCH)/kubectl"
 	@chmod +x $(KCTL)
 
+$(K9S):
+	@echo "install k9s $(K9S_VERSION) to $(K9S)"
+	@mkdir -p $(TOOL_DIR)
+	@curl -sLo $(TOOL_DIR)/k9s.tgz "https://github.com/derailed/k9s/releases/download/v$(K9S_VERSION)/k9s_$(K9S_OS)_$(K9S_ARCH).tar.gz"
+	@tar -xzf $(TOOL_DIR)/k9s.tgz -C $(TOOL_DIR) k9s
+	@chmod +x $(K9S)
+	@rm $(TOOL_DIR)/k9s.tgz
+
 .PHONY: kind-create-cluster
-kind-create-cluster: | $(KIND) $(KCTL)
-	$(KIND) get kubeconfig -q --name kind-$(NAME) >/dev/null || $(KIND) create cluster --name kind-$(NAME) --wait 50s --config=$(KIND_CONFIG) --kubeconfig=$(KUBECONFIG)
+kind-create-cluster: | $(KIND) $(KCTL) $(K9S)
+	@$(KIND) get kubeconfig -q --name kind-$(NAME) >/dev/null || $(KIND) create cluster --name kind-$(NAME) --wait 50s --config=$(KIND_CONFIG) --kubeconfig=$(KUBECONFIG)
 	$(KCTL_CMD) get nodes
 
 .PHONY: kind-delete-cluster

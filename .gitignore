@@ -1,2 +1,4 @@
 .tools/
 kubeconfig
+kind-tls.crt
+kind-tls.key
