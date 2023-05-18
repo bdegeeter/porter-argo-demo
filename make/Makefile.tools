@@ -42,7 +42,7 @@ endif
 setup-tools: $(TF) $(JQ) $(KIND) $(KCTL)
 
 $(TF):
-	@echo "install terraform $(TF_VERSION)"
+	@echo "install terraform $(TF_VERSION) to $(TF)"
 	@mkdir -p $(TOOL_DIR)
 	@curl -sLo $(TOOL_DIR)/tf.zip "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_$(SYS_OS)_$(SYS_ARCH).zip"
 	@unzip -q $(TOOL_DIR)/tf.zip -d $(TOOL_DIR)
@@ -50,26 +50,26 @@ $(TF):
 	@rm $(TOOL_DIR)/tf.zip
 
 $(JQ):
-	@echo "install jq $(JQ_VERSION)"
+	@echo "install jq $(JQ_VERSION) to $(JQ)"
 	@mkdir -p $(TOOL_DIR)
 	@curl -sLo $(JQ) "https://github.com/stedolan/jq/releases/download/jq-$(JQ_VERSION)/jq-$(JQ_OS)$(JQ_ARCH)"
 	@chmod +x $(JQ)
 
 $(KIND):
-	@echo "install kind $(KIND_VERSION)"
+	@echo "install kind $(KIND_VERSION) to $(KIND)"
 	@mkdir -p $(TOOL_DIR)
 	@curl -sLo $(KIND) "https://kind.sigs.k8s.io/dl/v$(KIND_VERSION)/kind-$(SYS_OS)-$(KIND_ARCH)"
 	@chmod +x $(KIND)
 
 $(KCTL):
-	@echo "install kubectl $(KCTL_VERSION)"
+	@echo "install kubectl $(KCTL_VERSION) to $(KCTL)"
 	@mkdir -p $(TOOL_DIR)
 	@curl -sLo $(KCTL) "https://dl.k8s.io/v$(KCTL_VERSION)/bin/$(SYS_OS)/$(KCTL_ARCH)/kubectl"
 	@chmod +x $(KCTL)
 
 .PHONY: kind-create-cluster
 kind-create-cluster: | $(KIND) $(KCTL)
-	$(KIND) create cluster --name kind-$(NAME) --wait 50s --config=$(KIND_CONFIG) --kubeconfig=$(KUBECONFIG)
+	$(KIND) get kubeconfig -q --name kind-$(NAME) >/dev/null || $(KIND) create cluster --name kind-$(NAME) --wait 50s --config=$(KIND_CONFIG) --kubeconfig=$(KUBECONFIG)
 	$(KCTL_CMD) get nodes
 
 .PHONY: kind-delete-cluster
