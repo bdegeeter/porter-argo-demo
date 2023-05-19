@@ -1,0 +1,22 @@
+# Source: mongodb/templates/standalone/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: porter-operator-mongodb
+  namespace: "porter-operator-system"
+  labels:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/instance: porter-operator
+    app.kubernetes.io/component: mongodb
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: "mongodb"
+      port: 27017
+      targetPort: mongodb
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/instance: porter-operator
+    app.kubernetes.io/component: mongodb

@@ -1,0 +1,16 @@
+# Source: mongodb/templates/standalone/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: porter-operator-mongodb
+  namespace: "porter-operator-system"
+  labels:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/instance: porter-operator
+    app.kubernetes.io/component: mongodb
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "8Gi"

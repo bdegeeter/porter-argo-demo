@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - common-scripts-cm.yaml
+  - secrets.yaml
+  - serviceaccount.yaml
+  - standalone-dep-sts.yaml
+  - standalone-pvc.yaml
+  - standalone-svc.yaml
+
+images:
+  - name: mongodb
+    newName: ghcr.io/zcube/bitnami-compat/mongodb
+    newTag: 6.0-debian-11-r64

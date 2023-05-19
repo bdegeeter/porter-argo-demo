@@ -1,0 +1,13 @@
+apiVersion: getporter.org/v1
+kind: AgentConfig
+metadata:
+  name: default
+  labels:
+    getporter.org/generator: "porter-operator-bundle"
+spec:
+  pluginConfigFile:
+    schemaVersion: 1.0.0
+    plugins:
+      kubernetes: {}
+  # Values are set in helpers.sh based on the bundle parameters which are copied into agentconfig/*
+  # where each file is a setting on the spec.

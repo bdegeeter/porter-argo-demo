@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - operator.yaml
+  #- mongodb
+  - namespace
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+  - name: manager
+    newName: ghcr.io/getporter/porter-operator-manager
+    newTag: v0.8.2

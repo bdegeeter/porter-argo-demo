@@ -1,0 +1,13 @@
+apiVersion: getporter.org/v1
+kind: PorterConfig
+metadata:
+  name: default
+spec:
+  default-secrets-plugin: 'kubernetes.secrets'
+  default-storage: 'mongodb'
+  storage:
+    # - name: 'in-cluster-mongodb'
+    - name: 'mongodb'
+      plugin: 'mongodb'
+      config:
+        url: 'mongodb://root:porter-argo-demo@porter-operator-mongodb.porter-operator-system.svc.cluster.local'
