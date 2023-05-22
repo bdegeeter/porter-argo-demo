@@ -5,3 +5,11 @@ resources:
   - ../../base
   - mongodb
   - configs/porter-config.yaml
+
+images:
+  - name: manager
+    newName: ghcr.io/getporter/porter-operator-manager
+    newTag: v0.8.2
+  - name: docker.io/bitnami/mongodb:5.0.9-debian-11-r1
+    newName: ghcr.io/zcube/bitnami-compat/mongodb
+    newTag: 6.0-debian-11-r64

@@ -18,6 +18,8 @@ $(KIND_INGRESS_KEY):
 .PHONY: deploy
 deploy: | $(if $(findstring $(CLOUD),local), $(KIND_INGRESS_CRT) kind-create-cluster)
 	@echo "deploy to $(CLOUD)"
+	# Allow first deploy to fail if CRDs have not be loaded yet
+	$(KCTL_CMD) apply -k deploy/$(CLOUD) || true
 	$(KCTL_CMD) apply -k deploy/$(CLOUD)
 
 .PHONY: k9s

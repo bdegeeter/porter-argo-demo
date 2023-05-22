@@ -8,8 +8,3 @@ resources:
   - standalone-dep-sts.yaml
   - standalone-pvc.yaml
   - standalone-svc.yaml
-
-images:
-  - name: mongodb
-    newName: ghcr.io/zcube/bitnami-compat/mongodb
-    newTag: 6.0-debian-11-r64
