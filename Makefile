@@ -18,9 +18,17 @@ $(KIND_INGRESS_KEY):
 .PHONY: deploy
 deploy: | $(if $(findstring $(CLOUD),local), $(KIND_INGRESS_CRT) kind-create-cluster)
 	@echo "deploy to $(CLOUD)"
-	# Allow first deploy to fail if CRDs have not be loaded yet
-	$(KCTL_CMD) apply -k deploy/$(CLOUD) || true
+	# Double deploy to load CRDs if they are being loaded for the first time
+	$(KCTL_CMD) get crd/installations.getporter.org crd/workflows.argoproj.io || $(KCTL_CMD) apply -k deploy/$(CLOUD) || true 
 	$(KCTL_CMD) apply -k deploy/$(CLOUD)
+ifeq ($(CLOUD),local)
+	@echo "\nUse https://porter-argo.localtest.me to access Argo WebUI\n"
+endif
+
+.PHONY: test-installation
+test-installation:
+	$(KCTL_CMD) apply -n demo -f deploy/demo/test-installation.yaml
+
 
 .PHONY: k9s
 k9s: | $(K9S)

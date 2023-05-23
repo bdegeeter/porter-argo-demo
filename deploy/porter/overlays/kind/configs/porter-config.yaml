@@ -10,4 +10,4 @@ spec:
     - name: 'mongodb'
       plugin: 'mongodb'
       config:
-        url: 'mongodb://root:porter-argo-demo@porter-operator-mongodb.porter-operator-system.svc.cluster.local'
+        url: 'mongodb://root:demopasswd@porter-operator-mongodb.demo.svc.cluster.local'

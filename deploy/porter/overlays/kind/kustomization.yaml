@@ -12,4 +12,4 @@ images:
     newTag: v0.8.2
   - name: docker.io/bitnami/mongodb:5.0.9-debian-11-r1
     newName: ghcr.io/zcube/bitnami-compat/mongodb
-    newTag: 6.0-debian-11-r64
+    newTag: 5.0.17-debian-11-r64

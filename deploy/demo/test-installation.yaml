@@ -1,0 +1,14 @@
+apiVersion: getporter.org/v1
+kind: Installation
+metadata:
+  name: hello-llama
+  namespace: demo
+spec:
+  schemaVersion: 1.0.2
+  name: mellama
+  namespace: default
+  bundle:
+    repository: getporter/hello-llama
+    version: 0.1.1
+  parameters:
+    name: quickstart
