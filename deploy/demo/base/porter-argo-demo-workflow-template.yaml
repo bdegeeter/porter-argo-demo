@@ -3,6 +3,7 @@ kind: WorkflowTemplate
 metadata:
   name: porter-install-demo
 spec:
+  serviceAccount: porter-workflow
   arguments:
     parameters:
       - name: timeout
@@ -250,6 +251,7 @@ spec:
         source: |
           kubectl -n {{inputs.parameters.namespace}} logs job.batch/{{inputs.parameters.outputs-job-name}} | csplit -sf /tmp/outputs - /"porter installations"/+1
           cat /tmp/outputs01 | jq 'del(.[] | select(.Name == "io.cnab.outputs.invocationImageLogs")) | del(.[] | select(.Name == "tfstate"))' | jq '[.[] | with_entries(.key |= ascii_downcase)]' | base64 > /tmp/outputs.json
+          cat /tmp/outputs.json | base64 -d
       outputs:
         parameters:
           - name: porterOutputs

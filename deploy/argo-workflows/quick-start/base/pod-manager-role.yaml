@@ -5,13 +5,20 @@ metadata:
   annotations:
     workflows.argoproj.io/description: |
       This is an example of the permissions you would need if you wanted to use a resource template to create and manage
-      other pods. The same pattern would be suitable for other resurces, e.g. a service
+      other pods. The same pattern would be suitable for other resources, e.g. a service
 rules:
   - apiGroups:
-      - ""
+      - ''
     resources:
       - pods
     verbs:
+      - list
       - create
       - get
       - patch
+  - apiGroups:
+      - ''
+    resources:
+      - pods/log
+    verbs:
+      - get
