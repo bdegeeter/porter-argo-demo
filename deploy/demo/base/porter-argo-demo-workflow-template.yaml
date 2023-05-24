@@ -16,14 +16,16 @@ spec:
         value: default
       #- name: porterRef
       - name: porterBundleRepo
-        value: v0.6.0-main
+        #value: ghcr.io/bdegeeter/porter-test-me
+        value: ghcr.io/sgettys/porter-test-me
       - name: porterBundleVersion
-        value: ghcr.io/bdegeeter/porter-test-me
+        #value: v0.6.0-main
+        value: v0.6.4
       - name: porterParams
-        value: '\{ \}'
-        #value: '{ \"delay\": \"3\", \"exitStatus\": \"0\" }'
+        value: '{ }'
+        #value: '{ "delay": "3", "exitStatus": "0" }'
       - name: porterCreds
-        value: '\[ \]'
+        value: '[ ]'
       - name: debug
         value: false
   entrypoint: porter-installation-include-output
@@ -151,7 +153,7 @@ spec:
             "metadata": {
                "generateName": "{{inputs.parameters.deploy-name}}-",
                "labels": {
-                  "porterArgoDemo.deployName": "{{inputs.parameters.deploy-name}}",
+                  "porterArgoDemo.deployName": "{{inputs.parameters.deploy-name}}"
                }
             },
             "spec": {
@@ -223,7 +225,7 @@ spec:
             "metadata": {
                "generateName": "{{inputs.parameters.deploy-name}}-",
                "labels": {
-                  "porterArgoDemo.deployName": "{{inputs.parameters.deploy-name}}",
+                  "porterArgoDemo.deployName": "{{inputs.parameters.deploy-name}}"
                }
             },
             "spec": {
@@ -239,12 +241,14 @@ spec:
       inputs:
         parameters:
           - name: outputs-job-name
+          - name: namespace
+            value: demo
       script:
         image: bitnami/kubectl:latest
         command: [bash]
         #TODO: add namespace as parameter
         source: |
-          kubectl -n default logs job.batch/{{inputs.parameters.outputs-job-name}} | csplit -sf /tmp/outputs - /"porter installations"/+1
+          kubectl -n {{inputs.parameters.namespace}} logs job.batch/{{inputs.parameters.outputs-job-name}} | csplit -sf /tmp/outputs - /"porter installations"/+1
           cat /tmp/outputs01 | jq 'del(.[] | select(.Name == "io.cnab.outputs.invocationImageLogs")) | del(.[] | select(.Name == "tfstate"))' | jq '[.[] | with_entries(.key |= ascii_downcase)]' | base64 > /tmp/outputs.json
       outputs:
         parameters:
