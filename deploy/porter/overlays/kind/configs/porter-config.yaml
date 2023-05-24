@@ -3,6 +3,8 @@ kind: PorterConfig
 metadata:
   name: default
 spec:
+  namespace: demo
+  verbosity: info
   default-secrets-plugin: 'kubernetes.secrets'
   default-storage: 'mongodb'
   storage:

@@ -6,7 +6,7 @@ metadata:
 spec:
   schemaVersion: 1.0.2
   name: mellama
-  namespace: default
+  namespace: demo
   bundle:
     repository: getporter/hello-llama
     version: 0.1.1

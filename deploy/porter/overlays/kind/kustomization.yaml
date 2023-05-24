@@ -5,6 +5,7 @@ resources:
   - ../../base
   - mongodb
   - configs/porter-config.yaml
+  - configs/porter-agent-binding.yaml
 
 images:
   - name: manager

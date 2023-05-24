@@ -1,5 +1,6 @@
 INCLUDE_DIR=make
 NAME=porter-argo-demo
+NAMESPACE=demo
 #TODO (bdegeeter): support azure, aws, gcp and local (kind)
 CLOUD=local
 KIND_INGRESS_DIR=deploy/k8s-ingress-nginx/overlays/kind/default-ingress-secret
@@ -21,6 +22,7 @@ deploy: | $(if $(findstring $(CLOUD),local), $(KIND_INGRESS_CRT) kind-create-clu
 	# Double deploy to load CRDs if they are being loaded for the first time
 	$(KCTL_CMD) get crd/installations.getporter.org crd/workflows.argoproj.io || $(KCTL_CMD) apply -k deploy/$(CLOUD) || true 
 	$(KCTL_CMD) apply -k deploy/$(CLOUD)
+	$(KCTL_CMD) wait deployment -n $(NAMESPACE) argo-server porter-operator-controller-manager ingress-nginx-controller --for condition=Available=True --timeout=600s
 ifeq ($(CLOUD),local)
 	@echo "\nUse https://porter-argo.localtest.me to access Argo WebUI\n"
 endif
