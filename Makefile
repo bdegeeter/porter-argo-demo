@@ -31,12 +31,16 @@ endif
 test-installation:
 	$(KCTL_CMD) apply -n demo -f deploy/demo/test-installation.yaml
 
+.PHONY: argo-submit-workflow
+argo-submit-workflow:
+	@$(ARGO_CMD) -n $(NAMESPACE) submit --from workflowtemplate/porter-install-demo -p deployName=test-install-$(shell date +%s) --watch
+
 .PHONY: argo-get-latest-workflow
 argo-get-latest:
 	@$(ARGO_CMD) -n $(NAMESPACE) get @latest 
 
 .PHONY: argo-get-latest-output
-argo-get-latest-output:
+argo-get-latest-output: | $(JQ)
 	@$(ARGO_CMD) -n $(NAMESPACE) get @latest -o json | $(JQ) -r '.status.nodes[] | select(.displayName == "porter-outputs-from-job-logs") | .outputs.parameters[] | select(.name == "porterOutputs") | .value' |base64 -d
 
 .PHONY: k9s

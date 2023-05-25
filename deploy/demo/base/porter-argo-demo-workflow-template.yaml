@@ -14,7 +14,7 @@ spec:
       - name: porterVersion
         value: v1.0.14
       - name: porterNamespace
-        value: default
+        value: demo
       #- name: porterRef
       - name: porterBundleRepo
         #value: ghcr.io/bdegeeter/porter-test-me
