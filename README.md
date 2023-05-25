@@ -1,16 +1,16 @@
 # Porter Argo Demo
 
-<div>
-  <style>
-    table {
-      border-collapse: collapse;
-    }
+<style>
+  table {
+    border-collapse: collapse;
+  }
 
-    td {
-      border: none;
-      padding: 10px;
-    }
-  </style>
+  td {
+    border: none;
+    padding: 10px;
+  }
+</style>
+<div>
   <table>
     <tr>
       <td>
