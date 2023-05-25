@@ -17,7 +17,7 @@ $(KIND_INGRESS_KEY):
 	openssl genpkey -algorithm RSA -out $(KIND_INGRESS_KEY) -pkeyopt rsa_keygen_bits:2048
 
 .PHONY: deploy
-deploy: | $(if $(findstring $(CLOUD),local), $(KIND_INGRESS_CRT) kind-create-cluster)
+deploy: | $(ARGO) $(if $(findstring $(CLOUD),local), $(KIND_INGRESS_CRT) kind-create-cluster)
 	@echo "deploy to $(CLOUD)"
 	# Double deploy to load CRDs if they are being loaded for the first time
 	$(KCTL_CMD) get crd/installations.getporter.org crd/workflows.argoproj.io || $(KCTL_CMD) apply -k deploy/$(CLOUD) || true 
@@ -31,6 +31,13 @@ endif
 test-installation:
 	$(KCTL_CMD) apply -n demo -f deploy/demo/test-installation.yaml
 
+.PHONY: argo-get-latest-workflow
+argo-get-latest:
+	@$(ARGO_CMD) -n $(NAMESPACE) get @latest 
+
+.PHONY: argo-get-latest-output
+argo-get-latest-output:
+	@$(ARGO_CMD) -n $(NAMESPACE) get @latest -o json | $(JQ) -r '.status.nodes[] | select(.displayName == "porter-outputs-from-job-logs") | .outputs.parameters[] | select(.name == "porterOutputs") | .value' |base64 -d
 
 .PHONY: k9s
 k9s: | $(K9S)
