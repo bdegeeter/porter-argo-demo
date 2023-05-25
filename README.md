@@ -30,7 +30,7 @@ make deploy
 The default `make deploy` target installs all tool dependencies in the `.tools` directory
 and creates a local [KinD](https://kind.sigs.k8s.io/) cluster. It then deploys 
 the [Porter Operator](https://getporter.org/operator/),
-[Argo Workflows](https://argoproj.github.io/argo-workflows/) and a demo:w
+[Argo Workflows](https://argoproj.github.io/argo-workflows/) and a demo
 [Argo WorkflowTemplate](https://argoproj.github.io/argo-workflows/workflow-templates/).
 The workflow template creates a [Porter Operator Installation](https://getporter.org/operator/file-formats/)
 resource.
