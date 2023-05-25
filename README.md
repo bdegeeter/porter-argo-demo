@@ -1,22 +1,13 @@
 # Porter Argo Demo
 
-<style>
-  table {
-    border-collapse: collapse;
-  }
 
-  td {
-    border: none;
-    padding: 10px;
-  }
-</style>
 <div>
-  <table>
+  <table style="border-collapse: collapse;">
     <tr>
-      <td>
+      <td style="border: none;">
         <img src="./docs/imgs/porter-logo.png" alt="Porter Logo" width="100">
       </td>
-      <td>
+      <td style="border: none;">
         <img src="./docs/imgs/argo_workflows_logo.png" alt="Argo Workflows Logo" width="100">
       </td>
     </tr>
