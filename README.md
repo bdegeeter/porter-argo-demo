@@ -1,7 +1,17 @@
 # Porter Argo Demo
 
 <div>
- <table>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: none;
+      padding: 10px;
+    }
+  </style>
+  <table>
     <tr>
       <td>
         <img src="./docs/imgs/porter-logo.png" alt="Porter Logo" width="100">
