@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: porter-grpc-service
+  name: porter-grpc-service
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: porter-grpc-service
+  template:
+    metadata:
+      labels:
+        app: porter-grpc-service
+    spec:
+      volumes:
+        - name: porter-grpc-service-config-volume
+          configMap:
+            name: porter-grpc-service-config
+            items:
+              - key: config
+                path: config.yaml
+      containers:
+        - name: porter-grpc-service
+          image: ghcr.io/bdegeeter/porter/server:v1.0.0-alpha.5-794-g7168418d
+          ports:
+            - name: grpc
+              containerPort: 3001
+          args:
+            - server
+            - run
+          volumeMounts:
+            - mountPath: /porter-config
+              name: porter-grpc-service-config-volume
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi

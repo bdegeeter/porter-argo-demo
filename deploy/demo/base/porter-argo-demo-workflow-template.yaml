@@ -23,10 +23,10 @@ spec:
         #value: v0.6.0-main
         value: v0.6.4
       - name: porterParams
-        value: '{ }'
+        value: "{ }"
         #value: '{ "delay": "3", "exitStatus": "0" }'
       - name: porterCreds
-        value: '[ ]'
+        value: "[ ]"
       - name: debug
         value: false
   entrypoint: porter-installation-include-output
@@ -40,57 +40,70 @@ spec:
             template: global-outputs
         - - name: create-porter-installation
             template: porter-create-installation
-            when: '{{workflow.parameters.action}} == create'
+            when: "{{workflow.parameters.action}} == create"
             arguments:
               parameters:
                 - name: deploy-name
-                  value: '{{workflow.parameters.deployName}}'
+                  value: "{{workflow.parameters.deployName}}"
                 - name: bundle-repo
-                  value: '{{workflow.parameters.porterBundleRepo}}'
+                  value: "{{workflow.parameters.porterBundleRepo}}"
                 - name: bundle-version
-                  value: '{{workflow.parameters.porterBundleVersion}}'
+                  value: "{{workflow.parameters.porterBundleVersion}}"
                 - name: porter-namespace
-                  value: '{{workflow.parameters.porterNamespace}}'
+                  value: "{{workflow.parameters.porterNamespace}}"
                 - name: porter-params
-                  value: '{{workflow.parameters.porterParams}}'
+                  value: "{{workflow.parameters.porterParams}}"
                 - name: porter-creds
-                  value: '{{workflow.parameters.porterCreds}}'
+                  value: "{{workflow.parameters.porterCreds}}"
         - - name: porter-installation-outputs
             template: get-porter-installation-outputs
-            when: '{{workflow.parameters.action}} == create'
+            when: "{{workflow.parameters.action}} == create"
             arguments:
               parameters:
                 - name: install-name
-                  value: '{{steps.create-porter-installation.outputs.parameters.install-name}}'
+                  value: "{{steps.create-porter-installation.outputs.parameters.install-name}}"
                 - name: porter-version
-                  value: '{{workflow.parameters.porterVersion}}'
+                  value: "{{workflow.parameters.porterVersion}}"
                 - name: porter-namespace
-                  value: '{{workflow.parameters.porterNamespace}}'
+                  value: "{{workflow.parameters.porterNamespace}}"
                 - name: deploy-name
-                  value: '{{workflow.parameters.deployName}}'
+                  value: "{{workflow.parameters.deployName}}"
+        - - name: porter-installation-outputs-grpc
+            template: get-outputs-from-grpc-server
+            when: "{{workflow.parameters.action}} == create"
+            arguments:
+              parameters:
+                - name: install-name
+                  value: "{{steps.create-porter-installation.outputs.parameters.install-name}}"
+                - name: porter-version
+                  value: "{{workflow.parameters.porterVersion}}"
+                - name: porter-namespace
+                  value: "{{workflow.parameters.porterNamespace}}"
+                - name: deploy-name
+                  value: "{{workflow.parameters.deployName}}"
         - - name: porter-outputs-from-job-logs
             template: get-outputs-from-job-logs
-            when: '{{workflow.parameters.action}} == create'
+            when: "{{workflow.parameters.action}} == create"
             arguments:
               parameters:
                 - name: outputs-job-name
-                  value: '{{steps.porter-installation-outputs.outputs.parameters.outputs-job-name}}'
+                  value: "{{steps.porter-installation-outputs.outputs.parameters.outputs-job-name}}"
         # DELETE Installation
         - - name: get-installation-name
             template: get-installation-name-from-deploy-name
-            when: '{{workflow.parameters.action}} == delete'
+            when: "{{workflow.parameters.action}} == delete"
             arguments:
               parameters:
                 - name: deploy-name
-                  value: '{{workflow.parameters.deployName}}'
+                  value: "{{workflow.parameters.deployName}}"
 
         - - name: porter-uninstall
             template: porter-uninstall-installation
-            when: '{{workflow.parameters.action}} == delete'
+            when: "{{workflow.parameters.action}} == delete"
             arguments:
               parameters:
                 - name: install-name
-                  value: '{{steps.get-installation-name.outputs.result}}'
+                  value: "{{steps.get-installation-name.outputs.result}}"
 
     - name: installation-cleanup
       inputs:
@@ -129,7 +142,7 @@ spec:
       container:
         image: docker/whalesay
         command: [cowsay]
-        args: ['{{inputs.parameters.message}}']
+        args: ["{{inputs.parameters.message}}"]
     #TODO: add doc strings for all templates
     - name: porter-create-installation
       inputs:
@@ -173,7 +186,7 @@ spec:
         parameters:
           - name: install-name
             valueFrom:
-              jsonPath: '{.metadata.name}'
+              jsonPath: "{.metadata.name}"
           #TODO: remote this now that it's in the first globals step
           - name: porterOutputs
             # "[ ]" empty list in base64 for no outputs
@@ -201,7 +214,7 @@ spec:
         mergeStrategy: json
         flags:
           - installation
-          - '{{inputs.parameters.install-name}}'
+          - "{{inputs.parameters.install-name}}"
         manifest: |
           - op: replace
             path: /spec/uninstalled
@@ -237,7 +250,30 @@ spec:
         parameters:
           - name: outputs-job-name
             valueFrom:
-              jsonPath: '{.status.job.name}'
+              jsonPath: "{.status.job.name}"
+    - name: get-outputs-from-grpc-server
+      inputs:
+        parameters:
+          - name: install-name
+          - name: porter-version
+          - name: porter-namespace
+          - name: deploy-name
+      script:
+        image: alpine:latest
+        command: [sh]
+        source: |
+          apk add jq
+          wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.7/grpcurl_1.8.7_linux_$(uname -m).tar.gz
+          tar -xzvf grpcurl_1.8.7_linux_$(uname -m).tar.gz -C /usr/local/bin
+          grpcurl -plaintext -d '{"namespace": "{{inputs.parameters.porter-namespace}}", "name": "{{inputs.parameters.deploy-name}}"}' porter-grpc-service.demo.svc.cluster.local:3001 porter.v1alpha1.Porter.ListInstallationLatestOutputs | jq | base64 > /tmp/outputs.json
+          cat /tmp/outputs.json | base64 -d
+      outputs:
+        parameters:
+          - name: porterOutputs
+            valueFrom:
+              default: WyBdCg==
+              path: /tmp/outputs.json
+            globalName: porterOutputs
     - name: get-outputs-from-job-logs
       inputs:
         parameters:

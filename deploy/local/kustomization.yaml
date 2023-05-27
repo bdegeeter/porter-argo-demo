@@ -5,3 +5,4 @@ resources:
   - ../argo-workflows/overlays/kind
   - ../porter/overlays/kind
   - ../demo/overlays/kind
+  - ../porter-grpc-server/overlays/kind
