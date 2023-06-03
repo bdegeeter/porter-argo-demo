@@ -55,19 +55,6 @@ spec:
                   value: "{{workflow.parameters.porterParams}}"
                 - name: porter-creds
                   value: "{{workflow.parameters.porterCreds}}"
-        - - name: porter-installation-outputs
-            template: get-porter-installation-outputs
-            when: "{{workflow.parameters.action}} == create"
-            arguments:
-              parameters:
-                - name: install-name
-                  value: "{{steps.create-porter-installation.outputs.parameters.install-name}}"
-                - name: porter-version
-                  value: "{{workflow.parameters.porterVersion}}"
-                - name: porter-namespace
-                  value: "{{workflow.parameters.porterNamespace}}"
-                - name: deploy-name
-                  value: "{{workflow.parameters.deployName}}"
         - - name: porter-installation-outputs-grpc
             template: get-outputs-from-grpc-server
             when: "{{workflow.parameters.action}} == create"
@@ -81,13 +68,6 @@ spec:
                   value: "{{workflow.parameters.porterNamespace}}"
                 - name: deploy-name
                   value: "{{workflow.parameters.deployName}}"
-        - - name: porter-outputs-from-job-logs
-            template: get-outputs-from-job-logs
-            when: "{{workflow.parameters.action}} == create"
-            arguments:
-              parameters:
-                - name: outputs-job-name
-                  value: "{{steps.porter-installation-outputs.outputs.parameters.outputs-job-name}}"
         # DELETE Installation
         - - name: get-installation-name
             template: get-installation-name-from-deploy-name
