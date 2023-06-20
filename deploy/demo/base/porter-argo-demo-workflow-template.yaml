@@ -32,8 +32,7 @@ spec:
         value: v0.6.4
         type: string
       - name: porterParams
-        value: '{ }'
-        #value: '{ "delay": "3", "exitStatus": "0" }'
+        value: '{ "delay": "3", "exitStatus": "0" }'
         type: map
       - name: porterCreds
         value: '[ ]'

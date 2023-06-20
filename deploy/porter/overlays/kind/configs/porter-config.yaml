@@ -12,39 +12,11 @@ spec:
       plugin: 'mongodb'
       config:
         url: 'mongodb://root:demopasswd@porter-operator-mongodb.demo.svc.cluster.local'
-# TODO: enable telemetry config when PorterConfig CRD supports it.
-# Send trace and log data to an Open Telemetry collector
-#  telemetry:
-#    # Enable trace collection
-#    enabled: true
-#
-#    # Send telemetry via the grpc protocol
-#    # Allowed values: http/protobuf, grpc
-#    protocol: 'grpc'
-#
-#    # The Open Telemetry collector endpoint
-#    endpoint: 'porter-agent.otel.svc.cluster.local:4317'
-#
-#    # Specify if the collector endpoint is secured with TLS
-#    insecure: true
-#
-#    # Specify a certificate to connect to the collector endpoint
-#    #certificate: '/home/me/some-cert.pem'
-#
-#    # The compression type used when communicating with the collector endpoint
-#    compression: 'gzip'
-#
-#    # The timeout enforced when communicating with the collector endpoint
-#    timeout: '3s'
-#
-#    # The timeout enforced when establishing a connection with the collector endpoint
-#    start-timeout: '100ms'
-#
-#    # Used for testing that porter is emitting spans without setting up an open telemetry collector
-#    redirect-to-file: false
-#
-#    # Additional headers to send to the open telemetry collector
-#    headers:
-#      environment: 'local'
-#      owner: 'porter-demo'
-#
+  telemetry:
+    enabled: true
+    protocol: 'grpc'
+    endpoint: 'porter-collector.otel.svc.cluster.local:4317'
+    insecure: true
+    compression: 'gzip'
+    timeout: '3s'
+    start-timeout: '100ms'
