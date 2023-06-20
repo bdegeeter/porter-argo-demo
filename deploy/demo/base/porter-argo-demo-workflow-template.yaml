@@ -8,27 +8,37 @@ spec:
     parameters:
       - name: timeout
         value: 444
+        type: integer
       - name: action
         value: create
+        type: string
+        enum:
+          - create
+          - delete
       - name: deployName
+        type: string
       - name: porterVersion
         value: v1.0.14
       - name: porterNamespace
         value: demo
+        type: string
       #- name: porterRef
       - name: porterBundleRepo
         #value: ghcr.io/bdegeeter/porter-test-me
         value: ghcr.io/sgettys/porter-test-me
+        type: string
       - name: porterBundleVersion
         #value: v0.6.0-main
         value: v0.6.4
+        type: string
       - name: porterParams
-        value: '{ }'
-        #value: '{ "delay": "3", "exitStatus": "0" }'
+        value: '{ "delay": "3", "exitStatus": "0" }'
+        type: map
       - name: porterCreds
         value: '[ ]'
       - name: debug
         value: false
+        type: boolean
   entrypoint: porter-installation-include-output
   #TODO: how to handle failures in the exit handler
   #onExit: exit-handler

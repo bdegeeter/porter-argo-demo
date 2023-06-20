@@ -10,7 +10,7 @@ resources:
 images:
   - name: manager
     newName: ghcr.io/getporter/porter-operator-manager
-    newTag: v0.8.2
+    newTag: v0.8.2-28-g37ed573
   - name: docker.io/bitnami/mongodb:5.0.9-debian-11-r1
     newName: ghcr.io/zcube/bitnami-compat/mongodb
     newTag: 5.0.17-debian-11-r64

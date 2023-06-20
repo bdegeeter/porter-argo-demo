@@ -4,3 +4,14 @@ kind: Kustomization
 resources:
   - ../../quick-start/postgres
   - ingress.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: argo-server
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+        - name: BASE_HREF
+          value: "/"

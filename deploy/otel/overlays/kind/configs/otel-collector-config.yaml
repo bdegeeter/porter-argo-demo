@@ -1,0 +1,27 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otc
+spec:
+  mode: deployment
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+    exporters:
+      logging:
+      jaeger:
+        #   endpoint: "otel-agent.otel.svc.cluster.local:4317"
+        endpoint: "porter-agent.otel.svc.cluster.local:14250"
+        #endpoint: jaeger-all-in-one:14250
+        tls:
+          insecure: true
+    processors:
+      batch:
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [logging, jaeger]

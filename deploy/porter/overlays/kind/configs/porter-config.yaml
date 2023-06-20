@@ -8,8 +8,15 @@ spec:
   default-secrets-plugin: 'kubernetes.secrets'
   default-storage: 'mongodb'
   storage:
-    # - name: 'in-cluster-mongodb'
     - name: 'mongodb'
       plugin: 'mongodb'
       config:
         url: 'mongodb://root:demopasswd@porter-operator-mongodb.demo.svc.cluster.local'
+  telemetry:
+    enabled: true
+    protocol: 'grpc'
+    endpoint: 'porter-collector.otel.svc.cluster.local:4317'
+    insecure: true
+    compression: 'gzip'
+    timeout: '3s'
+    start-timeout: '100ms'
