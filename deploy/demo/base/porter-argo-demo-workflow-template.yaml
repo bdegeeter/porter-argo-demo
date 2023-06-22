@@ -249,13 +249,10 @@ spec:
           - name: porter-namespace
           - name: deploy-name
       script:
-        image: alpine:latest
+        image: docker.io/fullstorydev/grpcurl:v1.8.7-alpine
         command: [sh]
         source: |
-          apk add jq
-          wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.7/grpcurl_1.8.7_linux_$(uname -m).tar.gz
-          tar -xzvf grpcurl_1.8.7_linux_$(uname -m).tar.gz -C /usr/local/bin
-          grpcurl -plaintext -d '{"namespace": "{{inputs.parameters.porter-namespace}}", "name": "{{inputs.parameters.deploy-name}}"}' porter-grpc-service.demo.svc.cluster.local:3001 porter.v1alpha1.Porter.ListInstallationLatestOutputs | jq | base64 > /tmp/outputs.json
+          grpcurl -plaintext -d '{"namespace": "{{inputs.parameters.porter-namespace}}", "name": "{{inputs.parameters.deploy-name}}"}' porter-grpc-service.demo.svc.cluster.local:3001 porter.v1alpha1.Porter.ListInstallationLatestOutputs | base64 > /tmp/outputs.json
           cat /tmp/outputs.json | base64 -d
       outputs:
         parameters:
