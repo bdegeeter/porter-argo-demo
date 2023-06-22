@@ -64,7 +64,7 @@ argo-get-latest:
 
 .PHONY: argo-get-latest-output
 argo-get-latest-output: | $(JQ)
-	@$(ARGO_CMD) -n $(NAMESPACE) get @latest -o json | $(JQ) -r '.status.nodes[] | select(.displayName == "porter-outputs-from-job-logs") | .outputs.parameters[] | select(.name == "porterOutputs") | .value' |base64 -d
+	@$(ARGO_CMD) -n $(NAMESPACE) get @latest -o json | $(JQ) -r '.status.nodes[] | select(.displayName == "porter-installation-outputs-grpc") | .outputs.parameters[] | select(.name == "porterOutputs") | .value' |base64 -d
 
 .PHONY: k9s
 k9s: | $(K9S)

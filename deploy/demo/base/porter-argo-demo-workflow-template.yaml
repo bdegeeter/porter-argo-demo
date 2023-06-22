@@ -65,8 +65,8 @@ spec:
                   value: '{{workflow.parameters.porterParams}}'
                 - name: porter-creds
                   value: '{{workflow.parameters.porterCreds}}'
-        - - name: porter-installation-outputs
-            template: get-porter-installation-outputs
+        - - name: porter-installation-outputs-grpc
+            template: get-outputs-from-grpc-server
             when: '{{workflow.parameters.action}} == create'
             arguments:
               parameters:
@@ -78,13 +78,6 @@ spec:
                   value: '{{workflow.parameters.porterNamespace}}'
                 - name: deploy-name
                   value: '{{workflow.parameters.deployName}}'
-        - - name: porter-outputs-from-job-logs
-            template: get-outputs-from-job-logs
-            when: '{{workflow.parameters.action}} == create'
-            arguments:
-              parameters:
-                - name: outputs-job-name
-                  value: '{{steps.porter-installation-outputs.outputs.parameters.outputs-job-name}}'
         # DELETE Installation
         - - name: get-installation-name
             template: get-installation-name-from-deploy-name
@@ -248,6 +241,26 @@ spec:
           - name: outputs-job-name
             valueFrom:
               jsonPath: '{.status.job.name}'
+    - name: get-outputs-from-grpc-server
+      inputs:
+        parameters:
+          - name: install-name
+          - name: porter-version
+          - name: porter-namespace
+          - name: deploy-name
+      script:
+        image: docker.io/fullstorydev/grpcurl:v1.8.7-alpine
+        command: [sh]
+        source: |
+          grpcurl -plaintext -d '{"namespace": "{{inputs.parameters.porter-namespace}}", "name": "{{inputs.parameters.deploy-name}}"}' porter-grpc-service.demo.svc.cluster.local:3001 porter.v1alpha1.Porter.ListInstallationLatestOutputs | base64 > /tmp/outputs.json
+          cat /tmp/outputs.json | base64 -d
+      outputs:
+        parameters:
+          - name: porterOutputs
+            valueFrom:
+              default: WyBdCg==
+              path: /tmp/outputs.json
+            globalName: porterOutputs
     - name: get-outputs-from-job-logs
       inputs:
         parameters:
