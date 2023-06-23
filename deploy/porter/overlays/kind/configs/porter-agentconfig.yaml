@@ -1,0 +1,14 @@
+apiVersion: getporter.org/v1
+kind: AgentConfig
+metadata:
+  name: default
+  labels:
+    getporter.org/generator: 'porter-operator-bundle'
+spec:
+  porterVersion: v1.0.14
+  serviceAccount: porter-agent
+  pluginConfigFile:
+    schemaVersion: 1.0.0
+    plugins:
+      kubernetes: {}
+  retryLimit: 1
