@@ -7,6 +7,9 @@ resources:
   - configs/porter-config.yaml
   - configs/porter-agent-binding.yaml
 
+patchesStrategicMerge:
+  - configs/porter-agentconfig.yaml
+
 images:
   - name: manager
     newName: ghcr.io/getporter/porter-operator-manager
