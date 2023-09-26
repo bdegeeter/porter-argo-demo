@@ -10,5 +10,5 @@ generatorOptions:
 
 images:
   - name: manager
-    newName: ghcr.io/troy0820/porter-operator
+    newName: ghcr.io/getporter/porter-operator
     newTag: v1.0.0
